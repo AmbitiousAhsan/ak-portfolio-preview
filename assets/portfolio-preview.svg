@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">Ahsan Khan portfolio preview</title>
+  <desc id="desc">Content that works from the first draft to the final interface.</desc>
+  <rect width="1200" height="630" fill="#0B0B0B"/>
+  <path d="M72 72h96" stroke="#C9C9C9" stroke-width="2"/>
+  <text x="72" y="135" fill="#C9C9C9" font-family="Arial, sans-serif" font-size="24" letter-spacing="4">AHSAN KHAN</text>
+  <text x="72" y="250" fill="#F8F7F2" font-family="Georgia, serif" font-size="68">
+    <tspan x="72" dy="0">Content that works from the first draft</tspan>
+    <tspan x="72" dy="82">to the final interface.</tspan>
+  </text>
+  <text x="72" y="478" fill="#C9C9C9" font-family="Arial, sans-serif" font-size="27">Writing · editorial systems · frontend awareness · responsible AI</text>
+  <rect x="72" y="532" width="260" height="4" fill="#F8F7F2"/>
+  <text x="1080" y="570" text-anchor="end" fill="#F8F7F2" font-family="Georgia, serif" font-size="72">AK</text>
+</svg>

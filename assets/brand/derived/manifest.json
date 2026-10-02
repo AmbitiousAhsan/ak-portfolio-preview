@@ -1,0 +1,74 @@
+{
+  "kind": "raster-derivative",
+  "generatedBy": "scripts/derive-brand-crops.mjs",
+  "source": "/assets/brand/ahsan-khan-brand-board.jpg",
+  "sourceFile": "public/assets/brand/ahsan-khan-brand-board.jpg",
+  "sourceSha256": "fe56f2a955e85eb446f1dda70bdb2e5d10ae80ccf9fa7ae639daaa3f37c279a7",
+  "sourceDimensions": {
+    "width": 1280,
+    "height": 960
+  },
+  "disclaimer": "Lossy raster crops of a composite JPEG brand board. Not a vector master, not a traced recreation. Request SVG/transparent originals before production use.",
+  "crops": [
+    {
+      "file": "/assets/brand/derived/ak-lockup-primary-dark.png",
+      "width": 540,
+      "height": 318,
+      "region": {
+        "left": 370,
+        "top": 58,
+        "width": 540,
+        "height": 318
+      },
+      "note": "Primary lockup: AK monogram, AHSAN KHAN, \"Work, made clearer.\" on the charcoal panel."
+    },
+    {
+      "file": "/assets/brand/derived/ak-monogram-dark.png",
+      "width": 320,
+      "height": 186,
+      "region": {
+        "left": 480,
+        "top": 70,
+        "width": 320,
+        "height": 186
+      },
+      "note": "AK monogram alone, on the charcoal panel."
+    },
+    {
+      "file": "/assets/brand/derived/ak-lockup-horizontal-light.png",
+      "width": 412,
+      "height": 86,
+      "region": {
+        "left": 36,
+        "top": 486,
+        "width": 412,
+        "height": 86
+      },
+      "note": "Secondary horizontal lockup on the off-white panel."
+    },
+    {
+      "file": "/assets/brand/derived/ak-icon-dark.png",
+      "width": 98,
+      "height": 98,
+      "region": {
+        "left": 629,
+        "top": 483,
+        "width": 98,
+        "height": 98
+      },
+      "note": "Dark icon / favicon treatment."
+    },
+    {
+      "file": "/assets/brand/derived/ak-concept-sequence.png",
+      "width": 468,
+      "height": 120,
+      "region": {
+        "left": 788,
+        "top": 484,
+        "width": 468,
+        "height": 120
+      },
+      "note": "Concept sequence: complex work, becomes clear, usable results."
+    }
+  ]
+}
