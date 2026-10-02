@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><title>Linden &amp; Hale</title>
+<rect width="64" height="64" rx="14" fill="#1F3A32"/>
+<g transform="translate(2,-5.5) scale(0.5)">
+<path d="M60 104 C55 111 38 113 28 103 C15 90 19 66 34 53 C44 44 55 39 60 30 C65 39 76 44 86 53 C101 66 104 88 92 100 C82 110 65 109 60 104 Z" fill="#F6F3EC"/>
+<path d="M60 44 C60.6 64 60.6 84 60 104" stroke="#1F3A32" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+<path d="M60 104 C60.5 110 61.5 116 63 121" stroke="#F6F3EC" stroke-width="5" fill="none" stroke-linecap="round"/></g></svg>
