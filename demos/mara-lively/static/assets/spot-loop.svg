@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 260" width="640" height="520">
+
+<circle cx="160" cy="140" r="112" fill="#DCEAE3"/>
+<path d="M215.3 64.1 A86 86 0 1 1 104.7 64.1" fill="none" stroke="#FF5B3A" stroke-width="7" stroke-linecap="round"/>
+<polygon points="113.9,56.4 108.1,74.4 95.2,59.0" fill="#FF5B3A" stroke="#FF5B3A" stroke-width="3" stroke-linejoin="round"/>
+<g stroke="#12142B" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<circle cx="160" cy="130" r="60" fill="#F6F7F3"/>
+<path d="M212.0 130.0 L206.0 130.0 M205.0 156.0 L199.8 153.0 M186.0 175.0 L183.0 169.8 M160.0 182.0 L160.0 176.0 M134.0 175.0 L137.0 169.8 M115.0 156.0 L120.2 153.0 M108.0 130.0 L114.0 130.0 M115.0 104.0 L120.2 107.0 M134.0 85.0 L137.0 90.2 M160.0 78.0 L160.0 84.0 M186.0 85.0 L183.0 90.2 M205.0 104.0 L199.8 107.0 " stroke-width="2.5"/>
+<path d="M160 130 L160 94 M160 130 L184 142" stroke-width="4"/>
+</g>
+<circle cx="160" cy="130" r="4.5" fill="#12142B"/>
+<g stroke="#12142B" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<rect x="212" y="178" width="64" height="58" rx="6" fill="#F6F7F3"/>
+<path d="M212 196 L276 196" />
+<rect x="212" y="178" width="64" height="18" rx="6" fill="#FF5B3A"/>
+<rect x="48" y="186" width="40" height="40" rx="6" fill="#B7B0F5"/>
+<path d="M88 196 C102 196 102 216 88 216" fill="none"/>
+<path d="M58 176 C54 168 62 164 58 156 M72 176 C68 168 76 164 72 156" fill="none" stroke-width="2.5"/>
+</g>
+<text x="244" y="226" font-family="Georgia, 'Times New Roman', serif" font-size="22" font-weight="700" fill="#12142B" text-anchor="middle">TUE</text>
+</svg>

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" width="640" height="400">
+<rect x="0" y="0" width="320" height="200" rx="14" fill="#DCEAE3"/>
+
+<path d="M126 44 L194 44 L240 184 L80 184 Z" fill="#C8F03C" fill-opacity="0.35"/>
+<path d="M124 40 C124 20 196 20 196 40 Z" fill="#B7B0F5" stroke="#12142B" stroke-width="3"/>
+<ellipse cx="160" cy="42" rx="54" ry="11" fill="#12142B" stroke="#B7B0F5" stroke-width="2"/>
+<g stroke="#12142B" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<path d="M150 150 L148 170 M170 150 L172 170" stroke-width="5"/>
+<rect x="144" y="104" width="32" height="50" rx="12" fill="#3D4A86"/>
+<path d="M176 118 L196 128" stroke-width="5"/>
+<rect x="190" y="120" width="26" height="20" rx="3" fill="#A0703F"/>
+<path d="M198 120 C198 114 208 114 208 120" fill="none"/>
+<path d="M144 116 L126 108" stroke-width="5"/>
+<circle cx="160" cy="88" r="16" fill="#F2C9A0"/>
+<path d="M145 84 C146 70 174 70 175 84 C168 78 152 78 145 84 Z" fill="#3A2A1E"/>
+<rect x="150" y="56" width="20" height="16" rx="3" fill="#12142B"/>
+<rect x="144" y="70" width="32" height="5" rx="2" fill="#12142B"/>
+</g>
+<path d="M150 56 C154 44 166 44 170 56" fill="none" stroke="#12142B" stroke-width="2.5" stroke-linecap="round"/>
+<circle cx="155" cy="88" r="2.2" fill="#12142B"/><circle cx="165" cy="88" r="2.2" fill="#12142B"/>
+<path d="M155 96 Q160 99 165 96" fill="none" stroke="#12142B" stroke-width="2.5" stroke-linecap="round"/>
+<rect x="104" y="98" width="44" height="18" rx="4" fill="#F6F7F3" stroke="#12142B" stroke-width="2"/>
+<text x="126" y="111" font-family="'Courier New', Courier, monospace" font-size="10" font-weight="700" fill="#12142B" text-anchor="middle">HELLO</text>
+</svg>

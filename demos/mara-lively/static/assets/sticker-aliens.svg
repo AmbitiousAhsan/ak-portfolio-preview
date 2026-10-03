@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" width="320" height="320">
+<g transform="rotate(-6 80 80)">
+<circle cx="84" cy="84" r="64" fill="#12142B"/>
+<circle cx="80" cy="80" r="64" fill="#B7B0F5" stroke="#12142B" stroke-width="3"/>
+<text x="80" y="58" font-family="'Courier New', Courier, monospace" font-size="11" font-weight="700" letter-spacing="1.6" fill="#12142B" text-anchor="middle">NOW</text><text x="80" y="73" font-family="'Courier New', Courier, monospace" font-size="11" font-weight="700" letter-spacing="1.6" fill="#12142B" text-anchor="middle">ACCEPTING</text><text x="80" y="102" font-family="Georgia, 'Times New Roman', serif" font-size="30" fill="#12142B" text-anchor="middle">aliens</text>
+</g>
+</svg>

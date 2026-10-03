@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 260" width="640" height="520">
+
+<circle cx="160" cy="140" r="112" fill="#DCEAE3"/>
+<ellipse cx="160" cy="132" rx="34" ry="66" fill="#B7B0F5" stroke="#12142B" stroke-width="3"/>
+<ellipse cx="160" cy="132" rx="23" ry="48" fill="#0D1030" stroke="#C8F03C" stroke-width="2"/>
+<ellipse cx="160" cy="132" rx="11" ry="24" fill="none" stroke="#C8F03C" stroke-width="2"/>
+<g stroke="#12142B" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<path d="M78 232 L78 206 M94 232 L94 206 M226 232 L226 206 M242 232 L242 206" stroke-width="5"/>
+<rect x="64" y="158" width="44" height="54" rx="16" fill="#9AA0B8"/>
+<rect x="212" y="158" width="44" height="54" rx="16" fill="#12142B"/>
+<circle cx="86" cy="138" r="20" fill="#C68B5E"/>
+<circle cx="234" cy="138" r="20" fill="#C68B5E"/>
+<path d="M66 134 C64 114 106 112 106 132 C100 124 92 130 86 122 C80 130 74 124 66 134 Z" fill="#3A2A1E"/>
+<path d="M214 132 C214 114 254 112 254 132 C244 120 226 120 214 132 Z" fill="#3A2A1E"/>
+<path d="M226 152 L242 152 L234 164 Z" fill="#3A2A1E" stroke-width="2"/>
+<path d="M58 92 C52 92 50 84 58 82 C58 74 70 72 72 80 C80 76 88 84 82 92 Z" fill="#8C93AE" stroke-width="2.5"/>
+<path d="M62 98 L60 106 M70 98 L68 106 M78 98 L76 106" stroke-width="2"/>
+<rect x="252" y="170" width="34" height="22" rx="3" fill="#C8F03C" stroke-width="2.5"/>
+</g>
+<circle cx="80" cy="140" r="2.4" fill="#12142B"/><circle cx="92" cy="140" r="2.4" fill="#12142B"/>
+<path d="M80 150 L92 150 M76 132 L84 134 M90 134 L96 131" stroke="#12142B" stroke-width="2.5" stroke-linecap="round"/>
+<circle cx="228" cy="140" r="2.4" fill="#12142B"/><circle cx="240" cy="140" r="2.4" fill="#12142B"/>
+<path d="M226 148 Q234 152 244 145 M222 132 L232 135 M236 133 L246 128" stroke="#12142B" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+<text x="269" y="186" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="700" fill="#12142B" text-anchor="middle">840</text>
+<path d="M258 117 L259.96 122.04 L265 124 L259.96 125.96 L258 131 L256.04 125.96 L251 124 L256.04 122.04 Z" fill="#C8F03C" stroke="#12142B" stroke-width="2" stroke-linejoin="round"/>
+</svg>

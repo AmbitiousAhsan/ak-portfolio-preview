@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" width="640" height="400">
+<rect x="0" y="0" width="320" height="200" rx="14" fill="#DCEAE3"/>
+
+<g stroke="#12142B" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<rect x="60" y="30" width="150" height="150" rx="6" fill="#F6F7F3"/>
+<rect x="60" y="30" width="150" height="36" rx="6" fill="#FF5B3A"/>
+<rect x="60" y="52" width="150" height="14" fill="#FF5B3A"/>
+<path d="M88 20 L88 44 M182 20 L182 44" stroke-width="5"/>
+</g>
+<text x="135" y="56" font-family="Georgia, 'Times New Roman', serif" font-size="22" font-weight="700" fill="#F6F7F3" text-anchor="middle">TUE</text>
+<g stroke="#12142B" stroke-width="2.5" stroke-linecap="round">
+<path d="M78 90 L78 110 M86 90 L86 110 M94 90 L94 110 M102 90 L102 110 M72 108 L108 92"/>
+<path d="M118 90 L118 110 M126 90 L126 110 M134 90 L134 110 M142 90 L142 110 M112 108 L148 92"/>
+<path d="M158 90 L158 110 M166 90 L166 110 M174 90 L174 110 M182 90 L182 110 M152 108 L188 92"/>
+<path d="M78 124 L78 144 M86 124 L86 144 M94 124 L94 144 M102 124 L102 144 M72 142 L108 126"/>
+<path d="M118 124 L118 144 M126 124 L126 144 M134 124 L134 144 M142 124 L142 144 M112 142 L148 126"/>
+<path d="M158 124 L158 144 M166 124 L166 144"/>
+</g>
+<text x="135" y="168" font-family="'Courier New', Courier, monospace" font-size="12" font-weight="700" fill="#12142B" text-anchor="middle">…412</text>
+<circle cx="250" cy="130" r="30" fill="none" stroke="#A0703F" stroke-width="5" stroke-opacity="0.55"/>
+<g stroke="#12142B" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"><rect x="228" y="118" width="44" height="40" rx="6" fill="#B7B0F5"/><path d="M272 128 C286 128 286 150 272 150" fill="none"/></g>
+<path d="M240 108 C236 100 244 96 240 88 M254 108 C250 100 258 96 254 88" fill="none" stroke="#12142B" stroke-width="2.5" stroke-linecap="round"/>
+</svg>

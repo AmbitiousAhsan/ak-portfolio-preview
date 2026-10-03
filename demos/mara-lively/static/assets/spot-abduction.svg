@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 260" width="640" height="520">
+
+<circle cx="160" cy="140" r="112" fill="#0D1030"/>
+<circle cx="93.0" cy="180.4" r="1.9" fill="#F6F7F3" fill-opacity="0.69"/>
+<circle cx="103.2" cy="196.8" r="2.1" fill="#F6F7F3" fill-opacity="0.71"/>
+<circle cx="161.0" cy="107.8" r="1.0" fill="#F6F7F3" fill-opacity="0.64"/>
+<circle cx="177.1" cy="81.1" r="2.1" fill="#F6F7F3" fill-opacity="0.57"/>
+<circle cx="106.5" cy="76.8" r="2.4" fill="#F6F7F3" fill-opacity="0.82"/>
+<circle cx="235.0" cy="168.5" r="1.0" fill="#F6F7F3" fill-opacity="0.61"/>
+<circle cx="159.5" cy="88.5" r="2.3" fill="#F6F7F3" fill-opacity="0.63"/>
+<circle cx="91.0" cy="200.8" r="1.2" fill="#F6F7F3" fill-opacity="0.91"/>
+<circle cx="150.6" cy="158.3" r="1.5" fill="#F6F7F3" fill-opacity="0.69"/>
+<circle cx="97.4" cy="75.9" r="2.2" fill="#F6F7F3" fill-opacity="0.57"/>
+<circle cx="216.1" cy="103.4" r="2.4" fill="#F6F7F3" fill-opacity="0.90"/>
+<circle cx="211.0" cy="192.0" r="1.8" fill="#F6F7F3" fill-opacity="0.81"/>
+<circle cx="84.5" cy="146.2" r="2.2" fill="#F6F7F3" fill-opacity="0.55"/>
+<circle cx="244.6" cy="212.0" r="1.6" fill="#F6F7F3" fill-opacity="0.63"/>
+<circle cx="150.3" cy="131.7" r="2.4" fill="#F6F7F3" fill-opacity="0.64"/>
+<circle cx="65.4" cy="84.9" r="2.0" fill="#F6F7F3" fill-opacity="0.95"/>
+<polygon points="140,66 180,66 222,234 98,234" fill="#C8F03C" fill-opacity="0.28"/>
+<ellipse cx="160" cy="234" rx="70" ry="8" fill="#C8F03C" fill-opacity="0.4"/>
+<path d="M138 54 C138 30 182 30 182 54 Z" fill="#B7B0F5" stroke="#12142B" stroke-width="3"/>
+<ellipse cx="160" cy="58" rx="60" ry="14" fill="#12142B" stroke="#B7B0F5" stroke-width="2.5"/>
+<circle cx="122" cy="60" r="3.5" fill="#C8F03C"/><circle cx="141" cy="64" r="3.5" fill="#C8F03C"/><circle cx="160" cy="66" r="3.5" fill="#C8F03C"/><circle cx="179" cy="64" r="3.5" fill="#C8F03C"/><circle cx="198" cy="60" r="3.5" fill="#C8F03C"/>
+<g transform="rotate(150 160 160)">
+<g stroke="#12142B" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<path d="M152 186 L150 208 M168 186 L170 208" stroke-width="5"/>
+<path d="M146 156 L130 142 M174 156 L190 142" stroke-width="5"/>
+<rect x="146" y="146" width="28" height="42" rx="12" fill="#FF5B3A"/>
+<circle cx="160" cy="132" r="14" fill="#8A5A3C"/>
+</g>
+<circle cx="155" cy="131" r="2" fill="#12142B"/><circle cx="165" cy="131" r="2" fill="#12142B"/>
+<path d="M155 139 L165 139" stroke="#12142B" stroke-width="2.5" stroke-linecap="round"/>
+</g>
+<g transform="rotate(-12 86 202)">
+<rect x="30" y="186" width="112" height="30" rx="4" fill="none" stroke="#FF5B3A" stroke-width="3"/>
+<text x="86" y="207" font-family="'Courier New', Courier, monospace" font-size="15" font-weight="700" letter-spacing="2" fill="#FF5B3A" text-anchor="middle">RETURNED</text>
+</g>
+</svg>

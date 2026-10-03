@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 260" width="640" height="520">
+
+<circle cx="160" cy="140" r="112" fill="#DCEAE3"/>
+<ellipse cx="120" cy="220" rx="80" ry="6" fill="#12142B" fill-opacity="0.15"/>
+<g stroke="#12142B" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<rect x="121" y="40" width="14" height="114" rx="6" fill="#A0703F"/>
+<path d="M121 58 L135 64 M121 70 L135 76 M121 82 L135 88" stroke-width="2"/>
+<rect x="90" y="142" width="76" height="36" rx="10" fill="#6E7591"/>
+<path d="M48 218 C44 196 56 176 80 170 C92 158 120 156 138 166 C160 158 184 172 186 192 C196 200 196 214 188 218 Z" fill="#A7ADC2"/>
+<path d="M100 174 L108 188 L102 198 M152 170 L148 184" fill="none" stroke-width="2.5"/>
+</g>
+<path d="M98 36 L100.24 41.76 L106 44 L100.24 46.24 L98 52 L95.76 46.24 L90 44 L95.76 41.76 Z" fill="#C8F03C" stroke="#12142B" stroke-width="2" stroke-linejoin="round"/><path d="M162 49 L163.96 54.04 L169 56 L163.96 57.96 L162 63 L160.04 57.96 L155 56 L160.04 54.04 Z" fill="#C8F03C" stroke="#12142B" stroke-width="2" stroke-linejoin="round"/><path d="M130 12 L131.68 16.32 L136 18 L131.68 19.68 L130 24 L128.32 19.68 L124 18 L128.32 16.32 Z" fill="#C8F03C" stroke="#12142B" stroke-width="2" stroke-linejoin="round"/>
+<g stroke="#12142B" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<path d="M232 234 L232 208 M250 234 L250 208" stroke-width="5"/>
+<path d="M222 168 L206 184" stroke-width="5"/>
+<rect x="220" y="152" width="44" height="60" rx="16" fill="#FF5B3A"/>
+<path d="M218 174 L262 174 L252 198 L226 198 Z" fill="#F6F7F3"/>
+<rect x="226" y="178" width="30" height="14" rx="7" fill="#C68B5E" stroke-width="2.5"/>
+<path d="M226 174 L254 152" />
+<path d="M196 180 L216 180 L216 244 L212 240 L208 244 L204 240 L200 244 L196 240 Z" fill="#F6F7F3" stroke-width="2.5"/>
+<path d="M200 190 L212 190 M200 198 L210 198 M200 206 L212 206 M200 214 L208 214" stroke-width="2"/>
+<circle cx="242" cy="134" r="19" fill="#C68B5E"/>
+<path d="M224 128 C226 114 258 112 261 128 C252 122 234 121 224 128 Z" fill="#3A2A1E"/>
+<path d="M233 136 Q236 133 239 136 M245 136 Q248 133 251 136 M236 147 Q242 142 248 147" fill="none" stroke-width="2.5"/>
+</g>
+<rect x="225" y="117" width="34" height="9" rx="3" fill="#F6F7F3" stroke="#12142B" stroke-width="2" transform="rotate(-12 242 122)"/>
+<path d="M200 224 L212 224" stroke="#FF5B3A" stroke-width="4" stroke-linecap="round"/>
+</svg>
