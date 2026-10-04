@@ -111,7 +111,7 @@
   let scrollPending=false,footerBeamed=false;
   const updateProgress=()=>{
     scrollPending=false;const length=document.documentElement.scrollHeight-innerHeight,progress=length>0?Math.max(0,Math.min(1,scrollY/length)):0;
-    const bar=$('#reading-progress');bar.style.width=progress*100+'%';bar.classList.toggle('has-progress',progress>.005);
+    const bar=$('#reading-progress');bar.style.width=`calc(${progress*100}% - ${progress*14}px)`;bar.classList.toggle('has-progress',progress>.005);
     if(progress>.995&&!footerBeamed){footerBeamed=true;const mark=$('footer .brand>img');if(!motion.matches)mark.classList.add('footer-abducted');setTimeout(()=>mark.style.transform='rotate(-4deg)',1000);}
   };
   addEventListener('scroll',()=>{if(!scrollPending){scrollPending=true;requestAnimationFrame(updateProgress);}},{passive:true});addEventListener('resize',updateProgress);updateProgress();
@@ -144,4 +144,12 @@
     loadingTimer=setTimeout(()=>{const loading=$('#loading');loading.hidden=false;let i=0;loadingCycle=setInterval(()=>{$('span:last-child',loading).textContent=['Calibrating calm…','Locating your universe…','Moving the tissues closer…'][++i%3];},1300);},400);
   });
   addEventListener('pageshow',()=>{clearTimeout(loadingTimer);clearInterval(loadingCycle);$('#loading').hidden=true;});
+  // Phones: the panic button waits until the hero's buttons have scrolled away, so it never covers them.
+  const panicButton=$('#panic-button'),heroActions=$('#hero-book')?.closest('.actions');
+  if(panicButton&&heroActions&&'IntersectionObserver'in window){
+    const small=matchMedia('(max-width: 599px)');let heroVisible=false;
+    const tuck=()=>panicButton.classList.toggle('is-tucked',small.matches&&heroVisible);
+    new IntersectionObserver(entries=>{heroVisible=entries.some(e=>e.isIntersecting);tuck();}).observe(heroActions);
+    small.addEventListener('change',tuck);
+  }
 })();

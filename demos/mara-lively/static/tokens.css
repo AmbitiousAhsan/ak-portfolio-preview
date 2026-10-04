@@ -2,7 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap');
 :root{
   --paper:#F6F7F3; --scrub:#DCEAE3; --space:#0D1030; --ink:#12142B;
-  --beam:#C8F03C; --panic:#FF5B3A; --panic-text:#C2361A; --nebula:#B7B0F5; --suit:#3D4A86;
+  --beam:#C8F03C; --panic:#FF5B3A; --panic-text:#B8311A; --nebula:#B7B0F5; --suit:#3D4A86;
   --muted:#4A4E66; --muted-dark:#A9AECB; --line-dark:#3A3F70; --body-ink:#2C3048;
   --font-display:"Instrument Serif","Iowan Old Style",Georgia,serif;
   --font-text:"Bricolage Grotesque","Avenir Next","Segoe UI",system-ui,sans-serif;
