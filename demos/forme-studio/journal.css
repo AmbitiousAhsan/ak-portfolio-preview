@@ -326,7 +326,7 @@
   margin-top: 20px;
 }
 .journal-read > span {
-  color: var(--red);
+  color: var(--red-text);
   font-size: 23px;
   transition: transform 0.2s;
 }
@@ -493,7 +493,7 @@
 }
 .story-sidebar nav a span {
   font-size: 9px;
-  color: var(--red);
+  color: var(--red-text);
   padding-top: 2px;
 }
 .story-sidebar nav a:hover {
@@ -563,7 +563,7 @@
 }
 .story-takeaways li:before {
   content: counter(takeaway, decimal-leading-zero);
-  color: var(--red);
+  color: var(--red-text);
   font-size: 10px;
   position: absolute;
   left: 0;
@@ -625,7 +625,7 @@
   transform-origin: left;
 }
 nav a[aria-current="page"] {
-  color: var(--red);
+  color: var(--red-text);
 }
 @media (max-width: 1100px) {
   .site-header .header-note {
