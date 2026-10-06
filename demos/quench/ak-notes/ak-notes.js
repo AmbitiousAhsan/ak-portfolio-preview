@@ -43,6 +43,8 @@
     '.toggle{position:fixed;bottom:calc(20px + var(--lift,0px) + env(safe-area-inset-bottom,0px));display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:10px 16px 10px 12px;border:0;cursor:pointer;font:600 15px/1 ' + sans + ';rotate:-2deg;box-shadow:0 10px 24px rgba(20,24,20,.28),0 2px 3px rgba(20,24,20,.2);transition:translate .2s,rotate .2s}',
     '.toggle.left{left:20px}.toggle.right{right:20px;rotate:2deg}',
     '.toggle:hover{translate:0 -2px;rotate:0deg}',
+    '.toggle.away{transform:translateY(calc(100% + 40px));transition:transform .25s ease}',
+    '.toggle:not(.away){transition:translate .2s,rotate .2s,transform .25s ease}',
     '.toggle .sw{position:relative;flex:none;width:36px;height:20px;border-radius:999px;background:rgba(39,50,34,.3);transition:background .2s}',
     '.toggle .sw::after{content:"";position:absolute;left:3px;top:3px;width:14px;height:14px;border-radius:50%;background:#f6f3ec;transition:transform .2s}',
     '.toggle[aria-pressed="true"] .sw{background:#273222}',
@@ -332,6 +334,19 @@
     if (path.some(function (n) { return n && typeof n.className === 'string' && /^akn-/.test(n.className); })) return;
     closeCard(false);
   });
+
+  // Phones: the switch slides away while you scroll down and returns when you scroll up, so it
+  // never sits on the end of a page. It stays put while the notes are on.
+  var narrow = matchMedia('(max-width: 760px)');
+  var lastY = scrollY;
+  addEventListener('scroll', function () {
+    var y = scrollY;
+    var on = toggle.getAttribute('aria-pressed') === 'true';
+    if (!narrow.matches || on || y < 120 || y < lastY - 4) toggle.classList.remove('away');
+    else if (y > lastY + 4) toggle.classList.add('away');
+    lastY = y;
+  }, {passive: true});
+  toggle.addEventListener('focus', function () { toggle.classList.remove('away'); });
 
   // Moving between pages of the same demo keeps the notes on, without restarting the tour.
   var resume = false;
