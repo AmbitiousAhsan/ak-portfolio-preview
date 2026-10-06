@@ -4,79 +4,70 @@
   const $$ = (selector, parent = document) => [
     ...parent.querySelectorAll(selector),
   ];
+  const el = (tag, props = {}, children = []) => {
+    const node = Object.assign(document.createElement(tag), props);
+    node.append(...children);
+    return node;
+  };
+  const pad = (n) => String(n).padStart(2, "0");
   const reduced = matchMedia("(prefers-reduced-motion: reduce)");
-  const connection = navigator.connection;
-  let userPaused = reduced.matches || Boolean(connection?.saveData);
+  const saveData = Boolean(navigator.connection?.saveData);
+  // Reduced motion or Save-Data start with page motion paused; films never play on their own.
+  let userPaused = reduced.matches || saveData;
   const motionButton = $("[data-global-motion]");
-  const ambient = $("#ambient-film");
-  const ambientButton = $("#motion-toggle");
-  let filmVisible = false;
-  let backgroundPaused = false;
-  let ambientRequest = 0;
   let opener = null;
 
+  /* The shoots: every frame by id, with its shoot and its number on the contact sheet. */
+  const SHOOTS = window.FORME_SHOOTS || [];
+  const FRAMES = {};
+  SHOOTS.forEach((shoot) =>
+    shoot.frames.forEach((frame, i) => {
+      FRAMES[frame.id] = { frame, shoot, no: i + 1 };
+    }),
+  );
+
+  // Every photograph is served from assets/img/ in five widths as AVIF and WebP, with a JPEG at 1200.
+  const LADDER = [200, 400, 800, 1200, 1600];
+  const srcset = (id, ext, widths = LADDER) =>
+    widths.map((w) => `assets/img/${id}-${w}.${ext} ${w}w`).join(", ");
+  function setPicture(img, id, sizes) {
+    $$("source", img.closest("picture")).forEach((source) => {
+      source.sizes = sizes;
+      source.srcset = srcset(id, source.type === "image/avif" ? "avif" : "webp");
+    });
+    img.src = `assets/img/${id}-1200.jpg`;
+  }
+  function pictureFor(id, sizes, alt = "", widths = [200, 400]) {
+    const { frame } = FRAMES[id];
+    return el("picture", {}, [
+      el("source", { type: "image/avif", srcset: srcset(id, "avif", widths), sizes }),
+      el("source", { type: "image/webp", srcset: srcset(id, "webp", widths), sizes }),
+      el("img", {
+        src: `assets/img/${id}-1200.jpg`,
+        alt,
+        width: frame.w,
+        height: frame.h,
+        decoding: "async",
+      }),
+    ]);
+  }
+
+  /* Motion: page animations, reveals and the films. */
+  const players = $$("[data-player]");
   function syncMotion() {
     document.documentElement.classList.toggle("motion-paused", userPaused);
     if (motionButton)
       motionButton.textContent = userPaused ? "Enable motion" : "Pause motion";
-    syncAmbient();
-  }
-  async function syncAmbient() {
-    if (!ambient) return;
-    const request = ++ambientRequest;
-    const shouldPlay =
-      filmVisible &&
-      !userPaused &&
-      !backgroundPaused &&
-      !document.hidden &&
-      !document.querySelector("dialog[open]");
-    if (!shouldPlay) {
-      ambient.pause();
-      updateAmbientButton();
-      return;
-    }
-    if (!ambient.getAttribute("src")) ambient.src = ambient.dataset.src;
-    try {
-      await ambient.play();
-      if (
-        request !== ambientRequest ||
-        userPaused ||
-        backgroundPaused ||
-        document.hidden ||
-        !filmVisible ||
-        document.querySelector("dialog[open]")
-      )
-        ambient.pause();
-    } catch {
-      /* The poster remains available when autoplay is blocked. */
-    }
-    updateAmbientButton();
-  }
-  function updateAmbientButton() {
-    if (!ambientButton) return;
-    ambientButton.textContent = ambient.paused
-      ? "Play background motion"
-      : "Pause background motion";
-    ambientButton.setAttribute("aria-pressed", String(!ambient.paused));
+    if (userPaused) players.forEach((player) => $("video", player)?.pause());
   }
   motionButton?.addEventListener("click", () => {
     userPaused = !userPaused;
-    syncMotion();
-  });
-  ambientButton?.addEventListener("click", () => {
-    if (ambient.paused) {
-      userPaused = false;
-      backgroundPaused = false;
-    } else backgroundPaused = true;
     syncMotion();
   });
   reduced.addEventListener("change", () => {
     userPaused = reduced.matches;
     syncMotion();
   });
-  document.addEventListener("visibilitychange", syncAmbient);
-  ambient?.addEventListener("play", updateAmbientButton);
-  ambient?.addEventListener("pause", updateAmbientButton);
   if ("IntersectionObserver" in window) {
     document.documentElement.classList.add("motion-ready");
     const revealObserver = new IntersectionObserver(
@@ -88,20 +79,69 @@
           }
         });
       },
-      { threshold: 0.08, rootMargin: "0px 0px -30px 0px" },
+      { threshold: 0.05, rootMargin: "0px 0px -30px 0px" },
     );
-    $$(".reveal").forEach((el) => revealObserver.observe(el));
-    if (ambient)
-      new IntersectionObserver(
-        (entries) => {
-          filmVisible = entries[0].isIntersecting;
-          syncAmbient();
-        },
-        { threshold: 0.2 },
-      ).observe(ambient);
+    $$(".reveal").forEach((node) => revealObserver.observe(node));
   }
   syncMotion();
 
+  /* Films: a still until someone presses play. Nothing loads before that. One film plays at a
+     time, and a film that scrolls out of view, or meets "Pause motion", pauses. */
+  const pauseOthers = (current) =>
+    players.forEach((p) => {
+      const v = $("video", p);
+      if (v !== current) v?.pause();
+    });
+  players.forEach((player) => {
+    const video = $("video", player);
+    const figure = player.closest("figure");
+    const button = $("[data-play]", figure);
+    const label = $(".social-toggle-text", button);
+    const poster = $(".film-poster", player);
+    const sync = () => {
+      const playing = !video.paused;
+      button.classList.toggle("is-playing", playing);
+      if (label) label.textContent = playing ? "Pause" : "Play";
+    };
+    button.addEventListener("click", async () => {
+      if (!video.getAttribute("src")) video.src = video.dataset.src;
+      if (!video.paused) {
+        video.pause();
+        return;
+      }
+      pauseOthers(video);
+      video.hidden = false;
+      if (player.dataset.player === "wide") {
+        // The 16:9 film hands over to the browser's own controls.
+        button.hidden = true;
+        video.focus({ preventScroll: true });
+      }
+      try {
+        await video.play();
+      } catch {
+        /* The controls stay available if playback is refused. */
+      }
+    });
+    video.addEventListener("play", () => pauseOthers(video));
+    video.addEventListener("playing", () => {
+      if (poster) poster.hidden = true;
+      sync();
+    });
+    video.addEventListener("pause", sync);
+    video.addEventListener("ended", sync);
+    if ("IntersectionObserver" in window)
+      new IntersectionObserver(
+        (entries) => {
+          if (!entries[0].isIntersecting) video.pause();
+        },
+        { threshold: 0.1 },
+      ).observe(player);
+  });
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) players.forEach((p) => $("video", p)?.pause());
+  });
+
+  /* Journal reading progress */
   const readingProgress = $(".reading-progress > span");
   const story = $(".journal-story");
   if (readingProgress && story) {
@@ -119,14 +159,13 @@
         requestAnimationFrame(updateReadingProgress);
       }
     };
-    window.addEventListener("scroll", scheduleReadingProgress, {
-      passive: true,
-    });
+    window.addEventListener("scroll", scheduleReadingProgress, { passive: true });
     window.addEventListener("resize", scheduleReadingProgress);
     window.addEventListener("load", scheduleReadingProgress);
     updateReadingProgress();
   }
 
+  /* Phone menu */
   const menuButton = $(".menu-toggle");
   const nav = $("#navigation");
   function closeMenu() {
@@ -148,6 +187,7 @@
     }
   });
 
+  /* Dialogs: one at a time, focus returns to whatever opened them. */
   function openDialog(dialog, trigger) {
     if (!dialog || typeof dialog.showModal !== "function") return false;
     const returnTarget = trigger?.closest("dialog")
@@ -156,8 +196,8 @@
     $$("dialog[open]").forEach((other) => other.close());
     opener = returnTarget;
     document.body.classList.add("modal-open");
+    players.forEach((p) => $("video", p)?.pause());
     dialog.showModal();
-    syncAmbient();
     return true;
   }
   $$("dialog").forEach((dialog) => {
@@ -174,20 +214,22 @@
         dialog.close();
     });
     dialog.addEventListener("close", () => {
-      if (dialog.id === "film-dialog") {
-        const player = $("#film-player");
-        player.pause();
-        player.removeAttribute("src");
-        player.load();
-      }
       if (!document.querySelector("dialog[open]")) {
         document.body.classList.remove("modal-open");
         if (opener?.isConnected) opener.focus({ preventScroll: true });
       }
-      syncAmbient();
     });
   });
+  const arrowKeys = (dialog, step) =>
+    dialog?.addEventListener("keydown", (event) => {
+      if (event.target.closest("input, textarea")) return;
+      if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
+        event.preventDefault();
+        step(event.key === "ArrowRight" ? 1 : -1);
+      }
+    });
 
+  /* Journal image viewer */
   const storyImages = $$("[data-story-image]");
   const storyImageDialog = $("#story-image-dialog");
   let currentStoryImage = 0;
@@ -196,17 +238,21 @@
     const link = storyImages[currentStoryImage];
     const sourceImage = $("img", link);
     const viewer = $("#story-viewer-image");
-    viewer.src = link.getAttribute("href");
     viewer.alt = sourceImage.alt;
     viewer.width = sourceImage.width;
     viewer.height = sourceImage.height;
+    setPicture(viewer, link.dataset.frame, "(max-width: 760px) 100vw, 80vw");
+    storyImageDialog.style.setProperty(
+      "--ratio",
+      String(sourceImage.width / sourceImage.height),
+    );
     $("#story-image-title").textContent = link.dataset.title;
     const credit = $(".story-photo-credit", link.closest("figure"));
     $("#story-viewer-credit").replaceChildren(
       ...[...credit.childNodes].map((node) => node.cloneNode(true)),
     );
     $("#story-image-position").textContent =
-      `${String(currentStoryImage + 1).padStart(2, "0")} / ${String(storyImages.length).padStart(2, "0")}`;
+      `${pad(currentStoryImage + 1)} / ${pad(storyImages.length)}`;
   }
   storyImages.forEach((link, index) =>
     link.addEventListener("click", (event) => {
@@ -222,201 +268,233 @@
   $("#next-story-image")?.addEventListener("click", () =>
     renderStoryImage(currentStoryImage + 1),
   );
-  storyImageDialog?.addEventListener("keydown", (event) => {
-    if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
-      event.preventDefault();
-      renderStoryImage(
-        currentStoryImage + (event.key === "ArrowRight" ? 1 : -1),
-      );
+  arrowKeys(storyImageDialog, (d) => renderStoryImage(currentStoryImage + d));
+
+  /* Picks: frames a visitor marks on a contact sheet. Kept in this browser only, they go into
+     the brief as references. If storage is unavailable they last until the page closes. */
+  const PICKS_KEY = "forme-picks";
+  let memoryPicks = [];
+  function readPicks() {
+    try {
+      const stored = JSON.parse(localStorage.getItem(PICKS_KEY) || "[]");
+      return Array.isArray(stored) ? stored.filter((id) => FRAMES[id]) : [];
+    } catch {
+      return memoryPicks.slice();
     }
+  }
+  function writePicks(list) {
+    memoryPicks = list.slice();
+    try {
+      localStorage.setItem(PICKS_KEY, JSON.stringify(list));
+    } catch {
+      /* Private mode or blocked storage: picks stay in memory. */
+    }
+    syncPicks();
+  }
+  const isPicked = (id) => readPicks().includes(id);
+  function togglePick(id) {
+    const picks = readPicks();
+    writePicks(
+      picks.includes(id) ? picks.filter((p) => p !== id) : picks.concat(id),
+    );
+  }
+  // Picks in site order: by shoot, then by frame number.
+  function sortedPicks() {
+    const order = (id) =>
+      SHOOTS.indexOf(FRAMES[id].shoot) * 100 + FRAMES[id].no;
+    return readPicks().sort((a, b) => order(a) - order(b));
+  }
+  const pickName = (id) =>
+    `${FRAMES[id].shoot.title}, frame ${pad(FRAMES[id].no)}`;
+  window.addEventListener("storage", (event) => {
+    if (event.key === PICKS_KEY) syncPicks();
   });
 
-  const projects = window.FORME_PROJECTS || [];
-  let currentProject = 0;
-  let visibleProjects = projects;
-  const projectDialog = $("#project-dialog");
-  function renderProject(index) {
-    currentProject = (index + visibleProjects.length) % visibleProjects.length;
-    const project = visibleProjects[currentProject];
-    $("#project-title").textContent = project.title;
-    $("#project-category").textContent = project.category;
-    const img = $("#project-detail-image");
-    img.src = "assets/" + project.image;
-    img.alt = project.alt;
-    img.width = project.width;
-    img.height = project.height;
-    $("#project-brief").textContent = project.brief;
-    $("#project-description").textContent = project.description;
-    const shootButton = $("[data-enquire]", projectDialog);
-    if (shootButton)
-      shootButton.dataset.service = {
-        fashion: "Fashion & editorial",
-        brands: "Brands & objects",
-        portraits: "People & portraits",
-      }[project.filter];
-    const meta = $("#project-meta");
-    meta.replaceChildren();
-    [
-      ["Format", project.format],
-      ["Direction", project.approach],
-      ["Imagined outputs", project.deliverables],
-    ].forEach(([label, value]) => {
-      const dt = document.createElement("dt");
-      dt.textContent = label;
-      const dd = document.createElement("dd");
-      dd.textContent = value;
-      meta.append(dt, dd);
-    });
-    const credit = $("#project-credit");
-    credit.replaceChildren(
-      document.createTextNode("Curated visual reference. Photography by "),
-    );
-    const link = document.createElement("a");
-    link.textContent = project.photographer;
-    link.href = project.source;
-    link.target = "_blank";
-    link.rel = "noopener noreferrer";
-    credit.append(
-      link,
-      document.createTextNode(
-        " / Unsplash. This is a concept study, not a commissioned client project.",
-      ),
-    );
-    $("#project-position").textContent =
-      `${String(currentProject + 1).padStart(2, "0")} / ${String(visibleProjects.length).padStart(2, "0")}`;
-    $("#previous-project").hidden = visibleProjects.length === 1;
-    $("#next-project").hidden = visibleProjects.length === 1;
-    projectDialog.scrollTop = 0;
-  }
-  $$("[data-project]").forEach((link) =>
-    link.addEventListener("click", (event) => {
-      if (typeof projectDialog?.showModal !== "function") return;
-      event.preventDefault();
-      renderProject(
-        visibleProjects.findIndex((p) => p.id === link.dataset.project),
+  /* A shoot page: the contact sheet and the frame viewer */
+  const pageShoot = SHOOTS.find((s) => s.slug === document.body.dataset.shoot);
+  const frameDialog = $("#frame-dialog");
+  let currentFrame = 0;
+  function renderFrame(index) {
+    const frames = pageShoot.frames;
+    currentFrame = (index + frames.length) % frames.length;
+    const frame = frames[currentFrame];
+    const no = pad(currentFrame + 1);
+    const img = $("#frame-image");
+    img.alt = frame.alt;
+    img.width = frame.w;
+    img.height = frame.h;
+    setPicture(img, frame.id, "(max-width: 760px) 100vw, 64vw");
+    frameDialog.style.setProperty("--ratio", String(frame.w / frame.h));
+    $("#frame-kicker").textContent = `${pageShoot.title} · ${no} of ${pad(frames.length)}`;
+    $("#frame-title").textContent = `Frame ${no}`;
+    const status = $("#frame-status");
+    status.replaceChildren();
+    if (pageShoot.selects.includes(frame.id))
+      status.append(
+        el("span", { className: "select-mark", ariaHidden: "true" }),
+        "Our select",
       );
-      openDialog(projectDialog, link);
+    $("#frame-alt").textContent = frame.alt;
+    const link = el("a", {
+      href: frame.page,
+      target: "_blank",
+      rel: "noopener noreferrer",
+      textContent: pageShoot.photographer,
+    });
+    $("#frame-credit").replaceChildren("Photograph by ", link, " / Pexels.");
+    $("#frame-position").textContent = `${no} / ${pad(frames.length)}`;
+    const pick = $("#frame-pick");
+    pick.dataset.pick = frame.id;
+    pick.setAttribute("aria-pressed", String(isPicked(frame.id)));
+    frameDialog.scrollTop = 0;
+  }
+  if (pageShoot && frameDialog) {
+    $$("[data-frame]").forEach((link) =>
+      link.addEventListener("click", (event) => {
+        if (typeof frameDialog.showModal !== "function" || link.tagName === "LI")
+          return;
+        event.preventDefault();
+        renderFrame(pageShoot.frames.findIndex((f) => f.id === link.dataset.frame));
+        openDialog(frameDialog, link);
+      }),
+    );
+    $("#previous-frame").addEventListener("click", () => renderFrame(currentFrame - 1));
+    $("#next-frame").addEventListener("click", () => renderFrame(currentFrame + 1));
+    arrowKeys(frameDialog, (d) => renderFrame(currentFrame + d));
+  }
+  $$("[data-pick]").forEach((button) =>
+    button.addEventListener("click", () => togglePick(button.dataset.pick)),
+  );
+  $$("[data-clear-picks]").forEach((button) =>
+    button.addEventListener("click", () => {
+      const shoot = SHOOTS.find((s) => s.slug === button.dataset.clearPicks);
+      const ids = shoot.frames.map((f) => f.id);
+      writePicks(readPicks().filter((id) => !ids.includes(id)));
+      $(".frame .pick")?.focus();
     }),
   );
-  $("#previous-project")?.addEventListener("click", () =>
-    renderProject(currentProject - 1),
-  );
-  $("#next-project")?.addEventListener("click", () =>
-    renderProject(currentProject + 1),
-  );
-  projectDialog?.addEventListener("keydown", (event) => {
-    if (event.key === "ArrowRight") {
-      event.preventDefault();
-      renderProject(currentProject + 1);
-    }
-    if (event.key === "ArrowLeft") {
-      event.preventDefault();
-      renderProject(currentProject - 1);
-    }
-  });
-  const cards = $$(".project-card");
-  const more = $(".work-more");
-  const showAll = $("#show-all-projects");
-  const previewCount = 6;
-  let galleryExpanded = false;
-  let activeFilter = "all";
-  function updateGallery(revealImmediately = false) {
-    visibleProjects = projects.filter(
-      (p) => activeFilter === "all" || p.filter === activeFilter,
-    );
-    let shown = 0;
-    cards.forEach((card) => {
-      const matches =
-        activeFilter === "all" || card.dataset.category === activeFilter;
-      card.hidden =
-        !matches ||
-        (activeFilter === "all" && !galleryExpanded && shown >= previewCount);
-      if (matches) shown++;
-      if (!card.hidden && revealImmediately) card.classList.add("visible");
+  function syncPicks() {
+    const picks = readPicks();
+    $$("[data-pick]").forEach((button) => {
+      const on = picks.includes(button.dataset.pick);
+      button.setAttribute("aria-pressed", String(on));
+      button.closest(".frame")?.classList.toggle("is-picked", on);
     });
-    $(".work-grid")?.classList.toggle("filtered", activeFilter !== "all");
-    if ($("#work-count"))
-      $("#work-count").textContent = `${visibleProjects.length} PROJECTS`;
-    if (more)
-      more.hidden =
-        activeFilter !== "all" ||
-        galleryExpanded ||
-        projects.length <= previewCount;
-    if (showAll) showAll.setAttribute("aria-expanded", String(galleryExpanded));
+    $$(".sheet[data-shoot]").forEach((sheet) => {
+      const shoot = SHOOTS.find((s) => s.slug === sheet.dataset.shoot);
+      const count = shoot.frames.filter((f) => picks.includes(f.id)).length;
+      const counter = $(".pick-count", sheet);
+      if (counter) counter.textContent = String(count);
+      const clear = $("[data-clear-picks]", sheet);
+      if (clear) clear.disabled = count === 0;
+    });
+    renderBriefPicks();
   }
-  if (cards.length) updateGallery();
+
+  /* Work: filter the shoots by service */
+  const rows = $$(".shoot-row");
   $$("[data-filter]").forEach((button) =>
     button.addEventListener("click", () => {
-      activeFilter = button.dataset.filter;
+      const filter = button.dataset.filter;
       $$("[data-filter]").forEach((item) => {
         const selected = item === button;
         item.classList.toggle("active", selected);
         item.setAttribute("aria-pressed", String(selected));
       });
-      updateGallery(true);
-    }),
-  );
-  showAll?.addEventListener("click", () => {
-    galleryExpanded = true;
-    updateGallery();
-    const firstNew = $("[data-project]", cards[previewCount]);
-    firstNew?.focus({ preventScroll: true });
-    cards[previewCount]?.scrollIntoView({
-      block: "start",
-      behavior: userPaused ? "instant" : "smooth",
-    });
-  });
-
-  const films = {
-    portrait: {
-      title: "A moment in motion",
-      file: "studio-film.mp4",
-      poster: "studio-film-poster.jpg",
-      author: "paashuu",
-      url: "https://www.pexels.com/video/elegant-fashion-model-in-studio-photoshoot-31223577/",
-    },
-    studio: {
-      title: "Between the frames",
-      file: "studio-bts.mp4",
-      poster: "bts-poster.jpg",
-      author: "MART PRODUCTION",
-      url: "https://www.pexels.com/video/fashion-models-on-a-photoshoot-8943162/",
-    },
-  };
-  $$("[data-film]").forEach((link) =>
-    link.addEventListener("click", async (event) => {
-      const dialog = $("#film-dialog");
-      if (typeof dialog?.showModal !== "function") return;
-      event.preventDefault();
-      const film = films[link.dataset.film];
-      $("#film-dialog-title").textContent = film.title;
-      const player = $("#film-player");
-      player.src = "assets/" + film.file;
-      player.poster = "assets/" + film.poster;
-      const credit = $("#film-credit");
-      const sourceLink = document.createElement("a");
-      sourceLink.href = film.url;
-      sourceLink.textContent = `${film.author} / Pexels`;
-      sourceLink.target = "_blank";
-      sourceLink.rel = "noopener noreferrer";
-      credit.replaceChildren(
-        document.createTextNode("Stock footage by "),
-        sourceLink,
-        document.createTextNode(
-          ". Curated and edited for this fictional studio concept. Silent film.",
-        ),
-      );
-      openDialog(dialog, link);
-      try {
-        await player.play();
-      } catch {
-        /* Native controls remain available. */
-      }
+      let shown = 0;
+      rows.forEach((row) => {
+        row.hidden = filter !== "all" && row.dataset.category !== filter;
+        if (!row.hidden) {
+          shown++;
+          row.classList.add("visible");
+        }
+      });
+      const count = $("#work-count");
+      if (count) count.textContent = `${shown} shoot${shown === 1 ? "" : "s"}`;
     }),
   );
 
+  /* Brief builder: four short steps in one dialog */
   const enquiryDialog = $("#enquiry-dialog");
   const form = $("#enquiry-form");
+  const steps = $$(".brief-step", form || undefined);
+  const result = $("#enquiry-result");
+  let step = 1;
+  function showStep(n, focus = true) {
+    step = n;
+    steps.forEach((fieldset) => {
+      fieldset.hidden = Number(fieldset.dataset.step) !== n;
+    });
+    $$(".brief-progress li", enquiryDialog).forEach((li) => {
+      const at = Number(li.dataset.for);
+      li.classList.toggle("done", at < n && stepComplete(at));
+      if (at === n) li.setAttribute("aria-current", "step");
+      else li.removeAttribute("aria-current");
+    });
+    $("[data-back]", form).hidden = n === 1;
+    $(".step-next", form).textContent = n < steps.length ? "Next" : "Create my brief";
+    if (n === 3) renderBriefPicks();
+    if (focus) $(`#step-${n}-title`)?.focus();
+  }
+  // A step counts as done once its required answers are in; a visitor can jump ahead to picks.
+  function stepComplete(n) {
+    return $$("input[required], textarea[required]", steps[n - 1]).every((field) =>
+      field.type === "radio"
+        ? Boolean(form.querySelector(`input[name="${field.name}"]:checked`))
+        : field.value.trim() !== "",
+    );
+  }
+  function validStep(n) {
+    const fieldset = steps[n - 1];
+    ["idea", "name"].forEach((name) => {
+      const field = $(`[name="${name}"]`, fieldset);
+      if (field)
+        field.setCustomValidity(field.value.trim() ? "" : "Please add a few words here.");
+    });
+    const invalid = $$("input, textarea", fieldset).find((field) => !field.checkValidity());
+    if (!invalid) return true;
+    if (fieldset.hidden) showStep(n, false);
+    invalid.reportValidity();
+    invalid.focus();
+    return false;
+  }
+  ["name", "idea"].forEach((name) =>
+    form?.elements[name].addEventListener("input", () =>
+      form.elements[name].setCustomValidity(""),
+    ),
+  );
+  function renderBriefPicks() {
+    const list = $("#brief-picks");
+    if (!list) return;
+    const picks = sortedPicks();
+    list.replaceChildren(
+      ...picks.map((id) =>
+        el("li", { className: "brief-pick" }, [
+          el("div", { className: "brief-pick-thumb" }, [
+            pictureFor(id, "140px", FRAMES[id].frame.alt),
+          ]),
+          el("p", { textContent: pickName(id) }),
+          el("button", {
+            type: "button",
+            className: "remove-pick",
+            textContent: "Remove",
+            ariaLabel: `Remove ${pickName(id)}`,
+            onclick: () => {
+              const buttons = $$(".remove-pick", list);
+              const at = buttons.findIndex((b) => b.dataset.id === id);
+              writePicks(readPicks().filter((p) => p !== id));
+              const next = $$(".remove-pick", list)[at] || $$(".remove-pick", list).pop();
+              (next || $("#step-3-title")).focus();
+            },
+          }),
+        ]),
+      ),
+    );
+    $$(".remove-pick", list).forEach((b, i) => {
+      b.dataset.id = picks[i];
+    });
+    $("#picks-empty").hidden = picks.length > 0;
+  }
   $$("[data-enquire]").forEach((trigger) =>
     trigger.addEventListener("click", (event) => {
       if (typeof enquiryDialog?.showModal !== "function") return;
@@ -424,66 +502,170 @@
       closeMenu();
       if (trigger.dataset.service) {
         form.elements.service.value = trigger.dataset.service;
+        result.hidden = true;
         form.hidden = false;
-        $("#enquiry-result").hidden = true;
+        showStep(1, false);
+      } else if (trigger.dataset.step) {
+        result.hidden = true;
+        form.hidden = false;
+        showStep(Number(trigger.dataset.step), false);
       }
       openDialog(enquiryDialog, trigger);
+      if (!form.hidden && (trigger.dataset.service || trigger.dataset.step))
+        $(`#step-${step}-title`)?.focus();
     }),
   );
-  let briefUrl = null;
-  ["name", "idea"].forEach((name) =>
-    form?.elements[name].addEventListener("input", () =>
-      form.elements[name].setCustomValidity(""),
-    ),
+  $("[data-back]", form || undefined)?.addEventListener("click", () =>
+    showStep(Math.max(1, step - 1)),
   );
+  let briefUrl = null;
   form?.addEventListener("submit", (event) => {
     event.preventDefault();
-    ["name", "idea"].forEach((name) =>
-      form.elements[name].setCustomValidity(
-        form.elements[name].value.trim() ? "" : "Please add a few words here.",
-      ),
-    );
-    if (!form.reportValidity()) return;
+    if (!validStep(step)) return;
+    if (step < steps.length) {
+      showStep(step + 1);
+      return;
+    }
+    // A visitor can jump straight to their picks, so the first step is checked again here.
+    if (!validStep(1)) return;
+    createBrief();
+  });
+  function createBrief() {
     const data = new FormData(form);
-    const values = [
-      ["Name", data.get("name").trim()],
-      ["Email", data.get("email").trim()],
+    const placements = data.getAll("placement");
+    const name = data.get("name").trim();
+    const email = data.get("email").trim();
+    const picks = sortedPicks();
+    const byShoot = [];
+    picks.forEach((id) => {
+      const { shoot, no } = FRAMES[id];
+      let group = byShoot.find((g) => g.shoot === shoot);
+      if (!group) byShoot.push((group = { shoot, nos: [] }));
+      group.nos.push(pad(no));
+    });
+    const and = (list) =>
+      list.length > 1 ? `${list.slice(0, -1).join(", ")} and ${list.at(-1)}` : list[0];
+    const pickLines = byShoot.map(
+      (g) =>
+        `${g.shoot.title} (photographs by ${g.shoot.photographer}): frame${g.nos.length > 1 ? "s" : ""} ${and(g.nos)}`,
+    );
+    const sections = [
       ["Shoot", data.get("service")],
-      ["The idea", data.get("idea").trim()],
-      ["Timing", data.get("timing").trim() || "To be discussed"],
+      ["Notes", data.get("idea").trim()],
+      [
+        "Where the pictures will live",
+        placements.length ? placements.join(", ") : "To be decided together",
+      ],
+      ["Picks", pickLines.length ? pickLines.join("\n") : "None yet"],
+      ["Timing", data.get("timing").trim() || "Open"],
+      ["Contact", `${name}, ${email}`],
     ];
     const summary = $("#brief-summary");
-    summary.replaceChildren();
-    values.forEach(([label, value]) => {
-      const dt = document.createElement("dt");
-      dt.textContent = label;
-      const dd = document.createElement("dd");
-      dd.textContent = value;
-      summary.append(dt, dd);
+    summary.replaceChildren(
+      ...sections.flatMap(([label, value]) => [
+        el("dt", { textContent: label }),
+        el("dd", { textContent: value }),
+      ]),
+    );
+    const date = new Date().toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
     });
-    const brief =
-      "FORME STUDIO — SHOOT BRIEF\n\n" +
-      values.map(([label, value]) => `${label}\n${value}`).join("\n\n") +
-      "\n\nCreated in a fictional studio concept by Ahsan Khan.\nNo enquiry has been sent. No booking has been made.\n";
+    const rule = "-".repeat(40);
+    const block = (label, lines) =>
+      `${label.toUpperCase()}\n${[].concat(lines).join("\n")}`;
+    const note =
+      "Made with the brief builder on the FORME website, a fictional studio\nconcept by Ahsan Khan. Nothing has been sent and no shoot is booked.";
+    const brief = [
+      `FORME STUDIO · SHOOT BRIEF\nWritten ${date}\n${rule}`,
+      block("Shoot", data.get("service")),
+      block("Notes", data.get("idea").trim()),
+      block(
+        "Where the pictures will live",
+        placements.length ? placements.map((p) => `- ${p}`) : "To be decided together",
+      ),
+      block(
+        "Picks from FORME shoots, as references",
+        pickLines.length ? pickLines.map((p) => `- ${p}`) : "None yet",
+      ),
+      block("Timing", data.get("timing").trim() || "Open"),
+      block("Contact", [name, email]),
+      `${rule}\n${note}`,
+    ].join("\n\n");
     if (briefUrl) URL.revokeObjectURL(briefUrl);
     briefUrl = URL.createObjectURL(
-      new Blob([brief], { type: "text/plain;charset=utf-8" }),
+      new Blob([brief + "\n"], { type: "text/plain;charset=utf-8" }),
     );
     $("#download-brief").href = briefUrl;
+    buildPrintBrief(sections, picks, date, note.replace("\n", " "));
     form.hidden = true;
-    $("#enquiry-result").hidden = false;
+    result.hidden = false;
     enquiryDialog.scrollTop = 0;
-    $("#result-title").tabIndex = -1;
     $("#result-title").focus();
+  }
+  // The printable brief sits outside the dialog and shows only in print, as one page.
+  function buildPrintBrief(sections, picks, date, note) {
+    $(".print-brief")?.remove();
+    const rows = sections
+      .filter(([label]) => label !== "Picks" && label !== "Shoot")
+      .flatMap(([label, value]) => [
+        el("dt", { textContent: label }),
+        el("dd", { textContent: value }),
+      ]);
+    if (picks.length)
+      rows.push(
+        el("dt", { textContent: "Picks" }),
+        el("dd", {}, [
+          el(
+            "ul",
+            { className: "print-picks" },
+            picks.map((id) =>
+              el("li", {}, [
+                el("div", { className: "brief-pick-thumb" }, [
+                  pictureFor(id, "120px", FRAMES[id].frame.alt, [200, 400]),
+                ]),
+                pickName(id),
+              ]),
+            ),
+          ),
+        ]),
+      );
+    document.body.append(
+      el("section", { className: "print-brief", ariaHidden: "true" }, [
+        el("div", { className: "print-brief-head" }, [
+          el("span", { className: "wordmark" }, [
+            "forme",
+            el("span", { className: "brand-dot" }),
+            el("span", { className: "wordmark-studio", textContent: "studio" }),
+          ]),
+          el("p", {}, ["Shoot brief", el("br"), `Written ${date}`]),
+        ]),
+        el("p", { className: "print-title", textContent: sections[0][1] }),
+        el("dl", {}, rows),
+        el("p", { className: "print-brief-foot", textContent: note }),
+      ]),
+    );
+  }
+  $("#print-brief")?.addEventListener("click", () => {
+    document.body.classList.add("printing-brief");
+    window.print();
   });
+  window.addEventListener("beforeprint", () => {
+    if (result && !result.hidden && enquiryDialog?.open)
+      document.body.classList.add("printing-brief");
+  });
+  window.addEventListener("afterprint", () =>
+    document.body.classList.remove("printing-brief"),
+  );
   $("#edit-brief")?.addEventListener("click", () => {
-    $("#enquiry-result").hidden = true;
+    result.hidden = true;
     form.hidden = false;
-    form.elements.name.focus();
+    showStep(1);
   });
   window.addEventListener("pagehide", () => {
     if (briefUrl) URL.revokeObjectURL(briefUrl);
-    ambient?.pause();
-    $("#film-player")?.pause();
+    players.forEach((p) => $("video", p)?.pause());
   });
+  syncPicks();
 })();
