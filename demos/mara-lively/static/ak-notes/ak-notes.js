@@ -198,12 +198,18 @@
     scrollTo({top: y, behavior: reduced.matches ? 'auto' : 'smooth'});
     return true;
   }
-  // Run once the scroll has settled, so the card is placed where the target ends up.
+  // Run once the page has stopped moving, so the card is placed where the target ends up. Smooth
+  // scrolling takes longer in some browsers than others, so this watches the scroll position
+  // instead of guessing a duration.
   function afterScroll(fn) {
-    var done = false;
-    var go = function () { if (done) return; done = true; removeEventListener('scrollend', go); fn(); };
-    if ('onscrollend' in window) addEventListener('scrollend', go);
-    setTimeout(go, 'onscrollend' in window ? 1200 : 650);
+    var done = false, last = scrollY, still = 0, moved = false, start = Date.now();
+    var go = function () { if (!done) { done = true; fn(); } };
+    (function tick() {
+      if (done) return;
+      if (Math.abs(scrollY - last) < 1) still++; else { still = 0; moved = true; last = scrollY; }
+      if (still >= (moved ? 6 : 20) || Date.now() - start > 3000) go(); else requestAnimationFrame(tick);
+    })();
+    setTimeout(go, 3500);
   }
   var queued = false;
   function schedule() { if (queued) return; queued = true; requestAnimationFrame(function () { queued = false; place(); }); }
