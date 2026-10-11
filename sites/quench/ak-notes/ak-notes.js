@@ -14,6 +14,9 @@
  * defaults to the page's own "Back to the case study" link). A calm note drops the tilt and the tape,
  * for sensitive parts of a page.
  *
+ * Beside the switch sits a way back to the portfolio, "By Ahsan Khan. See the case study", whenever
+ * the kit knows the case-study URL, so a visitor who lands deep in a site always has it on screen.
+ *
  * Everything the kit draws sits in shadow roots, so a demo's own CSS can't restyle the notes and the
  * notes can't leak into the demo. The font file is fetched only when a note is first shown.
  */
@@ -41,11 +44,16 @@
     ':focus-visible{outline:3px solid #1d2818;outline-offset:2px;box-shadow:0 0 0 6px #f6f3ec}',
     '.pin:focus-visible{clip-path:none}',
     '.paper{background:#c9e789 ' + noise + ';color:#273222}',
-    '.toggle{position:fixed;bottom:calc(20px + var(--lift,0px) + env(safe-area-inset-bottom,0px));display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:10px 16px 10px 12px;border:0;cursor:pointer;font:600 15px/1 ' + sans + ';rotate:-2deg;box-shadow:0 10px 24px rgba(20,24,20,.28),0 2px 3px rgba(20,24,20,.2);transition:translate .2s,rotate .2s}',
-    '.toggle.left{left:20px}.toggle.right{right:20px;rotate:2deg}',
+    '.dock{position:fixed;bottom:calc(20px + var(--lift,0px) + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:12px;transition:transform .25s ease}',
+    '.dock.left{left:20px}.dock.right{right:20px;flex-direction:row-reverse}',
+    '.toggle{display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:10px 16px 10px 12px;border:0;cursor:pointer;font:600 15px/1 ' + sans + ';rotate:-2deg;box-shadow:0 10px 24px rgba(20,24,20,.28),0 2px 3px rgba(20,24,20,.2);transition:translate .2s,rotate .2s}',
+    '.toggle.right{rotate:2deg}',
     '.toggle:hover{translate:0 -2px;rotate:0deg}',
-    '.toggle.away{transform:translateY(calc(100% + 40px));transition:transform .25s ease}',
-    '.toggle:not(.away){transition:translate .2s,rotate .2s,transform .25s ease}',
+    '.toggle{transition:translate .2s,rotate .2s,transform .25s ease}',
+    '.dock.away .toggle{transform:translateY(calc(100% + 40px))}',
+    '.back{display:inline-block;padding:11px 15px;border-radius:999px;background:#1d2818;color:#f6f3ec;font:600 14px/1.2 ' + sans + ';text-decoration:none;box-shadow:0 8px 20px rgba(20,24,20,.24);transition:background .2s}',
+    '.back:hover{background:#2f4026}',
+    '.back span{color:#c9e789}',
     '.toggle .sw{position:relative;flex:none;width:36px;height:20px;border-radius:999px;background:rgba(39,50,34,.3);transition:background .2s}',
     '.toggle .sw::after{content:"";position:absolute;left:3px;top:3px;width:14px;height:14px;border-radius:50%;background:#f6f3ec;transition:transform .2s}',
     '.toggle[aria-pressed="true"] .sw{background:#273222}',
@@ -70,7 +78,7 @@
     '.credit:hover{background:rgba(39,50,34,.18)}',
     '@keyframes pin-in{from{opacity:0;scale:.4}to{opacity:1;scale:1}}',
     '@keyframes card-in{from{opacity:0;translate:0 8px}to{opacity:1;translate:0 0}}',
-    '@media (max-width:600px){.toggle{bottom:calc(14px + var(--lift,0px) + env(safe-area-inset-bottom,0px));min-height:44px;padding:8px 12px 8px 10px;font-size:14px}.toggle.left{left:14px}.toggle.right{right:14px}}',
+    '@media (max-width:600px){.dock{bottom:calc(14px + var(--lift,0px) + env(safe-area-inset-bottom,0px));flex-direction:column-reverse;align-items:flex-start;gap:10px}.dock.left{left:14px}.dock.right{right:14px;flex-direction:column-reverse;align-items:flex-end}.toggle{min-height:44px;padding:8px 12px 8px 10px;font-size:14px}.back{padding:9px 13px;font-size:13px}.dock.away{transform:translateY(54px)}.dock.away .toggle{transform:none}}',
     '@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}'
   ].join('');
 
@@ -119,12 +127,23 @@
   var toggleHost = shadowHost('akn-toggle');
   toggleHost.host.style.cssText = 'position:fixed;z-index:2147483600';
   if (config.lift) toggleHost.host.style.setProperty('--lift', config.lift + 'px');
-  var toggle = el('button', 'toggle paper ' + (config.side === 'right' ? 'right' : 'left'));
+  var side = config.side === 'right' ? 'right' : 'left';
+  var dock = el('div', 'dock ' + side);
+  var toggle = el('button', 'toggle paper ' + side);
   toggle.type = 'button';
   toggle.setAttribute('aria-pressed', 'false');
   var sw = el('span', 'sw'); sw.setAttribute('aria-hidden', 'true');
   toggle.append(sw, document.createTextNode(config.label || 'Show the thinking'));
-  toggleHost.root.appendChild(toggle);
+  dock.appendChild(toggle);
+  // The way back to the portfolio stays on screen beside the switch.
+  if (caseHref) {
+    var back = el('a', 'back', 'By Ahsan Khan. ');
+    back.appendChild(el('span', '', 'See the case study'));
+    back.href = caseHref;
+    back.addEventListener('focus', function () { dock.classList.remove('away'); });
+    dock.appendChild(back);
+  }
+  toggleHost.root.appendChild(dock);
   // The switch is fixed in a corner, but keyboard users meet it early: straight after the page's
   // skip link when there is one, otherwise first.
   var skip = document.querySelector('body > a[href^="#"]');
@@ -344,17 +363,17 @@
   });
 
   // Phones: the switch slides away while you scroll down and returns when you scroll up, so it
-  // never sits on the end of a page. It stays put while the notes are on.
+  // never sits on the end of a page; the way back stays. It all stays put while the notes are on.
   var narrow = matchMedia('(max-width: 760px)');
   var lastY = scrollY;
   addEventListener('scroll', function () {
     var y = scrollY;
     var on = toggle.getAttribute('aria-pressed') === 'true';
-    if (!narrow.matches || on || y < 120 || y < lastY - 4) toggle.classList.remove('away');
-    else if (y > lastY + 4) toggle.classList.add('away');
+    if (!narrow.matches || on || y < 120 || y < lastY - 4) dock.classList.remove('away');
+    else if (y > lastY + 4) dock.classList.add('away');
     lastY = y;
   }, {passive: true});
-  toggle.addEventListener('focus', function () { toggle.classList.remove('away'); });
+  toggle.addEventListener('focus', function () { dock.classList.remove('away'); });
 
   // Moving between pages of the same demo keeps the notes on, without restarting the tour.
   var resume = false;
