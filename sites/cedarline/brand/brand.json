@@ -1,0 +1,181 @@
+{
+ "name": "Cedarline Care",
+ "palette": {
+  "ground": {
+   "hex": "#FFFFFF",
+   "name": "Ground",
+   "use": "Page ground: crisp white."
+  },
+  "cool": {
+   "hex": "#EEF3FB",
+   "name": "Cool band",
+   "use": "Alternate bands and quiet panels."
+  },
+  "cobalt": {
+   "hex": "#1746AA",
+   "name": "Cobalt",
+   "use": "The brand field: hero, page heads, Ongoing doors, buttons."
+  },
+  "ink": {
+   "hex": "#173C73",
+   "name": "Ink",
+   "use": "Text, rules and outlines."
+  },
+  "night": {
+   "hex": "#0F2A55",
+   "name": "Night",
+   "use": "Footer, hours board, top strip."
+  },
+  "signal": {
+   "hex": "#F4EDAD",
+   "name": "Signal yellow",
+   "use": "The Today colour: Door A, highlights, the second hero line."
+  },
+  "red": {
+   "hex": "#B42318",
+   "name": "Urgent red",
+   "use": "Emergency lines only: 911 and 988."
+  },
+  "green": {
+   "hex": "#1E7B45",
+   "name": "Status green",
+   "use": "The “accepting new patients (sample)” dot."
+  }
+ },
+ "contrast": [
+  {
+   "fg": "ink",
+   "bg": "ground",
+   "use": "Body text",
+   "ratio": 10.9
+  },
+  {
+   "fg": "cobalt",
+   "bg": "ground",
+   "use": "Links, buttons, labels",
+   "ratio": 8.4
+  },
+  {
+   "fg": "ground",
+   "bg": "cobalt",
+   "use": "Type on the cobalt field",
+   "ratio": 8.4
+  },
+  {
+   "fg": "signal",
+   "bg": "cobalt",
+   "use": "Today line on cobalt",
+   "ratio": 7
+  },
+  {
+   "fg": "ink",
+   "bg": "signal",
+   "use": "Text on Today panels",
+   "ratio": 9.1
+  },
+  {
+   "fg": "signal",
+   "bg": "night",
+   "use": "Hours board times",
+   "ratio": 11.8
+  },
+  {
+   "fg": "red",
+   "bg": "ground",
+   "use": "Emergency text",
+   "ratio": 6.6
+  },
+  {
+   "fg": "ground",
+   "bg": "red",
+   "use": "Type on the 911 band",
+   "ratio": 6.6
+  },
+  {
+   "fg": "ink",
+   "bg": "cool",
+   "use": "Text on cool bands",
+   "ratio": 9.8
+  }
+ ],
+ "type": [
+  {
+   "role": "Hero",
+   "face": "Overpass Black",
+   "size": "44–86px",
+   "line": "0.94",
+   "use": "One per page. Sentence case, two lines: signal yellow, then white."
+  },
+  {
+   "role": "H2",
+   "face": "Overpass ExtraBold",
+   "size": "30–48px",
+   "line": "1.04",
+   "use": "Section titles. Say what the section does for the patient."
+  },
+  {
+   "role": "H3",
+   "face": "Overpass ExtraBold",
+   "size": "20–24px",
+   "line": "1.1",
+   "use": "Cards and tiles."
+  },
+  {
+   "role": "Body",
+   "face": "Public Sans",
+   "size": "17px",
+   "line": "1.6",
+   "use": "Everything a patient reads in sentences."
+  },
+  {
+   "role": "Label",
+   "face": "Overpass Mono Bold",
+   "size": "12–13px, capitals, +0.09em",
+   "line": "1.2",
+   "use": "Signage codes: doors, steps, sample tags."
+  }
+ ],
+ "voice": [
+  {
+   "rule": "Answer the question she arrived with first.",
+   "do": "Walk-ins at Market Street (sample hours). Call first if you can.",
+   "dont": "Welcome to Cedarline, where your health is our priority."
+  },
+  {
+   "rule": "Name the door, not the department.",
+   "do": "Door A: urgent care, for something new that can’t wait.",
+   "dont": "Our acute episodic care service line."
+  },
+  {
+   "rule": "Say what happens next, never how fast.",
+   "do": "Before you leave, you’ll know who calls you about the result.",
+   "dont": "Be seen in 15 minutes or less!"
+  }
+ ],
+ "persona": {
+  "name": "Dana Ruiz, 38",
+  "line": "Works at a school, two kids, moved last year and hasn’t found a regular doctor yet. Tonight her son twisted his ankle at practice.",
+  "wants": [
+   "To be seen today without an emergency room bill",
+   "To leave with a family doctor, not just a receipt"
+  ],
+  "worries": [
+   "Long waits she can’t plan around",
+   "A bill she didn’t see coming",
+   "Being rushed",
+   "Repeating her history to a new face every time"
+  ]
+ },
+ "files": [
+  "brand/symbol.svg",
+  "brand/symbol-dark.svg",
+  "brand/wordmark.svg",
+  "brand/wordmark-dark.svg",
+  "brand/lockup-horizontal.svg",
+  "brand/lockup-horizontal-dark.svg",
+  "brand/lockup-stacked.svg",
+  "brand/lockup-stacked-dark.svg",
+  "brand/favicon.svg",
+  "brand/avatar.svg"
+ ]
+}

@@ -8,3 +8,15 @@
 # Astro's built files have content hashes in their names, so they can be cached for a year.
 /_astro/*
   Cache-Control: public, max-age=31536000, immutable
+
+# The sites hosted here, and the old /demos/ addresses that redirect to them, stay out of search
+# results: their case studies under /work/ are the pages to find. Search engines still follow the links.
+/sites/*
+  X-Robots-Tag: noindex, follow
+
+/demos/*
+  X-Robots-Tag: noindex, follow
+
+# The working documents behind each clinic case study: useful once someone is reading the case, not as a way in.
+/kit/process/*
+  X-Robots-Tag: noindex, follow
